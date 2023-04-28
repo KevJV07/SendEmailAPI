@@ -22,7 +22,7 @@ The output will give you your API URL and your bucket name.
 2. After the deployment, an S3 bucket will be automatically created. Note the bucket name.
 3. Upload the `txns.csv` file to the newly created S3 bucket. 
 ```bash
-aws s3 cp file.csv s3://bucket-name/ txns.csv
+aws s3 cp path2file.csv s3://bucket-name/txns.csv
 ```
 Change the bucket name, for yours and file.csv for the direction of your txns.csv file.
 
