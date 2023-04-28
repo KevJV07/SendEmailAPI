@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+    </style>
+</head>
+<body>
+    <img src="https://comunidadblogger.net/wp-content/uploads/2022/03/stori-logo.jpg" alt="Logo" width="200">
+    <h1>Reporte</h1>
+    <h2>Balance total: {{.TotalBalance}}</h2>
+    <ul>
+        {{range $month, $name := .MonthNames}}
+        <li>
+            <h3>{{$name}}</h3>
+            {{with $stats := index $.MonthlyStats $month}}
+            <p>Número de transacciones: {{$stats.Transactions}}</p>
+            <p>Balance mensual: {{$stats.Balance}}</p>
+            {{else}}
+            <p>No hay datos para este mes</p>
+            {{end}}
+        </li>
+        {{end}}
+    </ul>
+</body>
+</html>

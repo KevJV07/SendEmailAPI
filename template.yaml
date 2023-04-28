@@ -1,0 +1,52 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: An AWS Serverless Application that sends transaction report emails.
+
+# Globals section for setting common properties across all functions
+Globals:
+  Function:
+    Environment:
+      Variables:
+        TXNS_FILE: txns.csv
+        BUCKET_NAME: !Ref TransactionReportBucket
+
+Resources:
+  # Lambda function for sending transaction reports
+  SendTransactionReportFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: main
+      Runtime: go1.x
+      CodeUri: ./cmd
+      Events:
+        # API Gateway trigger for the Lambda function
+        Api:
+          Type: Api
+          Properties:
+            Path: /send/{sender_email}/{recipient_email}
+            Method: POST
+      # IAM policies for S3, SES, and SES Bulk Templated
+      Policies:
+        - S3ReadPolicy:
+              BucketName: !Ref TransactionReportBucket
+        - SESCrudPolicy:
+            IdentityName: '*'
+        - SESBulkTemplatedCrudPolicy:
+            IdentityName: '*'
+  
+  # S3 bucket for storing transaction reports
+  TransactionReportBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "bucket-${AWS::StackName}-${AWS::AccountId}"
+
+Outputs:
+  # Output the API Gateway endpoint URL
+  ApiUrl:
+    Description: API Gateway endpoint URL for Prod stage
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/send/"
+  
+  # Output the S3 bucket name
+  S3BucketName:
+    Description: "S3 bucket name"
+    Value: !Ref 'TransactionReportBucket'
